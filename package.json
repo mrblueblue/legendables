@@ -12,7 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/d3": "^4.10.0",
-    "d3-scale": "^1.0.6",
+    "d3-dispatch": "^1.0.3",
     "snabbdom": "^0.7.0"
   },
   "devDependencies": {
