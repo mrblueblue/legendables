@@ -1,0 +1,26 @@
+{
+  "name": "legendables",
+  "version": "1.0.0",
+  "description": "declarative legend",
+  "main": "index.js",
+  "scripts": {
+    "build:umd": "rollup -c -i index.ts -o dist/legendables.js",
+    "build:umd:min": "NODE_ENV=production rollup -c -i index.ts -o dist/legendables.min.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jonathan Huang <grokut@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@types/d3": "^4.10.0",
+    "d3-scale": "^1.0.6",
+    "snabbdom": "^0.7.0"
+  },
+  "devDependencies": {
+    "prettier": "^1.7.0",
+    "rollup": "^0.50.0",
+    "rollup-plugin-commonjs": "^8.2.1",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-typescript": "^0.8.1",
+    "rollup-plugin-uglify": "^2.0.1"
+  }
+}
