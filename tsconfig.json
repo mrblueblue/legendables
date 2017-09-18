@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES5",
+    "sourceMap": true,
+    "lib": [
+      "dom",
+      "es5",
+      "es2015.core"
+    ]
+  },
+  "include": [
+    "example/index.ts",
+    "src/legend.ts",
+    "src/vdom.ts",
+    "index.ts"
+  ]
+}

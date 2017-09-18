@@ -1,0 +1,125 @@
+.legendables {
+  z-index: 1;
+}
+
+.nominal-legend {
+  background: rgba(255, 255, 255, 0.9);
+  max-width: 160px;
+  border: 1px solid #e2e2e2;
+  border-radius: 2px;
+  font-size: 11px;
+  min-width: 100px;
+}
+
+.nominal-legend .header {
+  border-bottom: 1px solid #e2e2e2;
+  color: #a7a7a7;
+  font-weight: bold;
+  margin: 4px 4px 0 4px;
+  position: relative;
+  padding-right: 20px;
+  padding-bottom: 2px
+}
+
+.nominal-legend .body {
+  overflow-y: auto;
+  padding: 0 4px 4px 4px;
+}
+
+.nominal-legend .row {
+  display: flex;
+  align-items: center;
+  cursor: default;
+  min-height: 16px;
+}
+
+.nominal-legend .row .color {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+}
+
+.nominal-legend .row .text {
+  flex-grow: 1;
+  padding: 4px;
+  line-height: 1;
+}
+
+.gradient-legend {
+  position: relative;
+  display: inline-block;
+  z-index: 2;
+  min-height: 32px;
+  padding-right: 24px;
+}
+
+.gradient-legend .block {
+  float: left;
+  position: relative;
+  height: 32px;
+}
+
+.gradient-legend .block .color {
+  height: 12px;
+  width: 12px;
+  border: 1px solid white;
+}
+
+.gradient-legend .block .text {
+  position: absolute;
+  text-align: center;
+  transform: translateX(-50%);
+  left: 6px;
+  color: #868686;
+  font-size: 10px;
+  padding: 2px 2px 0 2px;
+  background: rgba(255, 255, 255);
+}
+
+.gradient-legend .block:not(:first-child):not(:last-child) .text {
+  display: none;
+}
+
+.gradient-legend .block:not(:first-child):not(:last-child):hover .text {
+  display: block;
+}
+
+.gradient-legend:hover .block:not(:hover) .color {
+  opacity: .4;
+}
+
+.gradient-legend .block:hover .text span {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.gradient-legend .block .text input {
+  display: none;
+}
+
+.gradient-legend .block:hover .text input {
+  position: relative;
+  display: inline-block;
+  margin: 0 16px 0 16px;
+}
+
+.gradient-legend .block input {
+  height: 16px;
+  width: 32px;
+  min-width: 32px;
+  border: 1px solid #c7c7c7;
+  text-align: center;
+  float: left;
+  overflow: visible;
+  outline: none;
+}
+
+.gradient-legend .lock {
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  position: absolute;
+  right: 0;
+  bottom: 14px;
+}

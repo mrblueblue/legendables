@@ -1,8 +1,7 @@
 import h from "snabbdom/h";
 import { patch } from "./vdom";
 import { VNode } from "snabbdom/vnode";
-import { dispatch } from "d3-dispatch";
-import { Dispatch } from "@types/d3-dispatch";
+import { dispatch, Dispatch } from "d3-dispatch";
 
 export interface GradientLegendState {
   type: "gradient";
@@ -26,32 +25,39 @@ export interface NominalLegendState {
 }
 
 export interface StackedLegendState {
-  type: "stacked",
-  width: number,
-  height: number,
-  list: Array<GradientLegendState | NominalLegendState>
+  type: "stacked";
+  width: number;
+  height: number;
+  list: Array<GradientLegendState | NominalLegendState>;
 }
 
-export type LegendState = GradientLegendState | NominalLegendState | StackedLegendState;
+export type LegendState =
+  | GradientLegendState
+  | NominalLegendState
+  | StackedLegendState;
 
 type Handlers = {
-  handleFilter: (key: string) => void;
+  handleFilter: (ev: UIEvent) => void;
 };
 
 export function renderGradientLegend(
-  state: GradientLegendState,
+  {range}: GradientLegendState,
   dispatch
 ): VNode {
-  return h("div.legend-cont", [
-    h(
-      "div.legend-group",
-      state.range.map((color, index) =>
-        h("div.legend-item", [
-          h("div.legend-swatch", { style: { background: color } }),
-          h("div.legend-label", "000000")
-        ])
-      )
-    )
+  return h(
+    "div.gradient-legend", [
+    ...range.map((color, index) =>
+      h("div.block", [
+        h("div.color", { style: { background: color } }),
+        h(
+          "div.text",
+          [h("span", "123")].concat(
+            index === 0 || index === range.length - 1 ? [h("input")] : []
+          )
+        )
+      ])
+    ),
+    h("div.lock")
   ]);
 }
 
@@ -59,29 +65,25 @@ export function renderNominalLegend(
   state: NominalLegendState,
   updates: Handlers
 ): VNode {
-  return h("div.dc-legend", [
-    h("div.dc-legend-header", "Legend"),
+  return h("div.nominal-legend", [
+    h("div.header", "Legend"),
     h(
-      "div.dc-legend-body",
+      "div.body",
       { style: { maxHeight: "100px" } },
       state.domain.map((value, index) =>
-        h(
-          "div.dc-legend-item",
-          { on: { click: [updates.handleFilter, value] } },
-          [
-            h("div.legend-item-color", {
-              style: { background: state.range[index] }
-            }),
-            h("div.legend-item-text", value)
-          ]
-        )
+        h("div.row", { on: { click: [updates.handleFilter, value] } }, [
+          h("div.color", {
+            style: { background: state.range[index] }
+          }),
+          h("div.text", value)
+        ])
       )
     )
   ]);
 }
 
-export function renderStackedLegend(state, updates):VNode {
-  return h("div.legend")
+export function renderStackedLegend(state, updates): VNode {
+  return h("div.legend");
 }
 
 export default class Legend {
@@ -97,29 +99,29 @@ export default class Legend {
     this.dispatch.on(event, callback);
   }
 
-  handleFilter = (key: string) => {
-    this.dispatch.call("filter", null, key);
+  handleFilter = (ev: UIEvent): void => {
+    this.dispatch.call("filter", null, ev);
   };
 
   setState = (state: LegendState): HTMLElement | VNode => {
     if (state.type === "gradient") {
       const vnode = renderGradientLegend(state, this.dispatch);
       this.node = patch(this.node, vnode);
-      return this.node
+      return this.node;
     } else if (state.type === "nominal") {
       const vnode = renderNominalLegend(state, {
         handleFilter: this.handleFilter
       });
       this.node = patch(this.node, vnode);
-      return this.node
+      return this.node;
     } else if (state.type === "stacked") {
       const vnode = renderStackedLegend(state, {
         handleFilter: this.handleFilter
       });
       this.node = patch(this.node, vnode);
-      return this.node
+      return this.node;
     } else {
-      throw new Error()
+      throw new Error();
     }
   };
 }

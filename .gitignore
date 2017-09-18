@@ -1,2 +1,6 @@
 dist/
 node_modules/
+*.js
+*.map
+!*.config.js
+npm-debug.log

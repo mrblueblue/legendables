@@ -4,23 +4,32 @@
   "description": "declarative legend",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "build:umd": "rollup -c -i index.ts -o dist/legendables.js",
     "build:umd:min": "NODE_ENV=production rollup -c -i index.ts -o dist/legendables.min.js",
+    "start": "webpack-dev-server --content-base ./example --config ./example/webpack.config.js",
+    "watch": "tsc --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Jonathan Huang <grokut@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@types/d3": "^4.10.0",
     "d3-dispatch": "^1.0.3",
     "snabbdom": "^0.7.0"
   },
   "devDependencies": {
+    "@types/d3": "^4.10.0",
+    "css-loader": "^0.28.7",
     "prettier": "^1.7.0",
     "rollup": "^0.50.0",
     "rollup-plugin-commonjs": "^8.2.1",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-typescript": "^0.8.1",
-    "rollup-plugin-uglify": "^2.0.1"
+    "rollup-plugin-uglify": "^2.0.1",
+    "style-loader": "^0.18.2",
+    "ts-loader": "^2.3.7",
+    "typescript": "^2.5.2",
+    "webpack": "^3.6.0",
+    "webpack-dev-server": "^2.8.2"
   }
 }
