@@ -43,3 +43,22 @@ gradient.setState({
     "#bdcf32"
   ]
 })
+
+gradient.on("blur", (...value) => {
+  console.log(value)
+  gradient.setState({
+    title: "Legend",
+    type: "gradient",
+    width: 50,
+    height: 100,
+    domain: [value, 100],
+    range: [
+      "#ea5545",
+      "#f46a9b",
+      "#ef9b20",
+      "#edbf33",
+      "#ede15b",
+      "#bdcf32"
+    ]
+  })
+})

@@ -32,7 +32,7 @@ export interface StackedLegendState {
 }
 
 export type LegendState =
-  | GradientLegendState
+  GradientLegendState
   | NominalLegendState
   | StackedLegendState;
 
@@ -40,22 +40,35 @@ type Handlers = {
   handleFilter: (ev: UIEvent) => void;
 };
 
+function renderGradientRowText({ index, domain, range, dispatch }) {
+  if (index === 0 || index === range.length - 1) {
+    return h("div.text", [
+      h("span", domain[index === 0 ? index : 1]),
+      h("input", {
+        props: {type: 'text', name: 'test', value: domain[index === 0 ? index : 1]},
+        on: {
+          blur: [(...args) => dispatch.call('blur', null, [...args]), 1, 2, 3]
+        }
+      })
+    ]);
+  } else {
+    return h("div.text", [h("span", "123")]);
+  }
+}
+
 export function renderGradientLegend(
-  {range}: GradientLegendState,
+  { domain, range }: GradientLegendState,
   dispatch
 ): VNode {
-  return h(
-    "div.gradient-legend", [
-    ...range.map((color, index) =>
-      h("div.block", [
-        h("div.color", { style: { background: color } }),
-        h(
-          "div.text",
-          [h("span", "123")].concat(
-            index === 0 || index === range.length - 1 ? [h("input")] : []
-          )
-        )
-      ])
+  return h("div.gradient-legend", [
+    h(
+      "div",
+      range.map((color, index) =>
+        h("div.block", [
+          h("div.color", { style: { background: color } }),
+          renderGradientRowText({ index, domain, range, dispatch })
+        ])
+      )
     ),
     h("div.lock")
   ]);
@@ -92,7 +105,7 @@ export default class Legend {
 
   constructor(node: HTMLElement) {
     this.node = node;
-    this.dispatch = dispatch("filter");
+    this.dispatch = dispatch("filter", "change", "blur");
   }
 
   on(event: string, callback: () => void) {

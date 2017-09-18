@@ -80,18 +80,12 @@
   display: none;
 }
 
-.gradient-legend .block:not(:first-child):not(:last-child):hover .text {
+.gradient-legend:hover .block:not(:first-child):not(:last-child):hover .text {
   display: block;
 }
 
 .gradient-legend:hover .block:not(:hover) .color {
   opacity: .4;
-}
-
-.gradient-legend .block:hover .text span {
-  opacity: 0;
-  pointer-events: none;
-  position: absolute;
 }
 
 .gradient-legend .block .text input {

@@ -2,6 +2,7 @@ import uglify from "rollup-plugin-uglify";
 import resolve from "rollup-plugin-node-resolve";
 import commonjs from "rollup-plugin-commonjs";
 import typescript from "rollup-plugin-typescript";
+import { minify } from 'uglify-es'
 
 var env = process.env.NODE_ENV;
 var config = {
@@ -16,14 +17,7 @@ var config = {
 
 if (env === "production") {
   config.plugins.push(
-    uglify({
-      compress: {
-        pure_getters: true,
-        unsafe: true,
-        unsafe_comps: true,
-        warnings: false
-      }
-    })
+    uglify({}, minify)
   );
 }
 
