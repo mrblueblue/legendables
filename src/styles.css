@@ -76,11 +76,11 @@
   background: rgba(255, 255, 255);
 }
 
-.gradient-legend .range .block:not(:first-child):not(:last-child) .text {
+.gradient-legend .block .step {
   display: none;
 }
 
-.gradient-legend .range .block:not(:first-child):not(:last-child):hover .text {
+.gradient-legend .block:hover .step {
   display: block;
 }
 
@@ -88,7 +88,7 @@
   opacity: .4;
 }
 
-.gradient-legend .block:hover .text span {
+.gradient-legend .block:hover .extent span {
   opacity: 0;
   pointer-events: none;
   position: absolute;

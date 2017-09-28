@@ -40,6 +40,17 @@ type Handlers = {
   handleFilter: (ev: UIEvent) => void;
 };
 
+function step (domain: [number, number], index: number, bins: number = 9) {
+  if (index === 0) {
+    return domain[0]
+  } else if (index + 1 === bins ){
+    return domain[1]
+  } else {
+    const increment = ((domain[1] - domain[0]) / bins)
+    return Math.round(domain[0] + (increment * index))
+  }
+}
+
 function validateNumericalInput (previousValue: number, nextValue: any): number {
   if (isNaN(parseInt(nextValue))) {
     return previousValue
@@ -49,7 +60,6 @@ function validateNumericalInput (previousValue: number, nextValue: any): number 
 }
 
 function renderInput (state: GradientLegendState, domain, dispatch): VNode {
-  console.log(domain.value, "value")
   return h("input", {
     hook: {
       update: (prevNode: VNode, nextNode: VNode) => nextNode.elm.value = domain.value
@@ -69,19 +79,20 @@ export function renderGradientLegend(
 ): VNode {
   return h(
     "div.gradient-legend", [
-      h("div.range", state.range.map((color, index) =>
-        h("div.block", [
+      h("div.range", state.range.map((color, index: number) => {
+        const isMinMax = index === 0 || index === state.range.length - 1
+        
+        return h("div.block", [
           h("div.color", { style: { background: color } }),
-          h(
-            "div.text",
-            [h("span", "123")].concat(
-              index === 0 || index === state.range.length - 1 ? [
+          h(`div.text.${isMinMax ? "extent" : "step"}`,
+            [h("span", `${step(state.domain, index, state.range.length)}`)].concat(
+              isMinMax ? [
                 renderInput(state, {value: index === 0 ? state.domain[0] : state.domain[1]}, dispatch)
               ] : []
             )
           )
         ])
-      )),
+      })),
       h("div.lock")
   ]);
 }

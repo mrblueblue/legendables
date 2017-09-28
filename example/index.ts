@@ -45,7 +45,6 @@ gradient.setState({
 })
 
 gradient.on("input", function input ({value, index}) {
-  console.log(value)
   gradient.setState(state => ({
     ...state,
     domain: [
