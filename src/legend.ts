@@ -40,24 +40,49 @@ type Handlers = {
   handleFilter: (ev: UIEvent) => void;
 };
 
+function validateNumericalInput (previousValue: number, nextValue: any): number {
+  if (isNaN(parseInt(nextValue))) {
+    return previousValue
+  } else {
+    return nextValue
+  }
+}
+
+function renderInput (state: GradientLegendState, domain, dispatch): VNode {
+  console.log(domain.value, "value")
+  return h("input", {
+    hook: {
+      update: (prevNode: VNode, nextNode: VNode) => nextNode.elm.value = domain.value
+    },
+    props: {
+      type:" number", value: domain.value
+    },
+    on: {
+      blur: (e) => dispatch.call("input", this, {value: validateNumericalInput(domain.value, e.target.value)})
+    }
+  })
+}
+
 export function renderGradientLegend(
-  {range}: GradientLegendState,
+  state: GradientLegendState,
   dispatch
 ): VNode {
   return h(
     "div.gradient-legend", [
-    ...range.map((color, index) =>
-      h("div.block", [
-        h("div.color", { style: { background: color } }),
-        h(
-          "div.text",
-          [h("span", "123")].concat(
-            index === 0 || index === range.length - 1 ? [h("input")] : []
+      h("div.range", state.range.map((color, index) =>
+        h("div.block", [
+          h("div.color", { style: { background: color } }),
+          h(
+            "div.text",
+            [h("span", "123")].concat(
+              index === 0 || index === state.range.length - 1 ? [
+                renderInput(state, {value: index === 0 ? state.domain[0] : state.domain[1]}, dispatch)
+              ] : []
+            )
           )
-        )
-      ])
-    ),
-    h("div.lock")
+        ])
+      )),
+      h("div.lock")
   ]);
 }
 
@@ -87,12 +112,14 @@ export function renderStackedLegend(state, updates): VNode {
 }
 
 export default class Legend {
+  state: LegendState;
   node: HTMLElement | VNode;
   dispatch: Dispatch<EventTarget>;
 
   constructor(node: HTMLElement) {
     this.node = node;
-    this.dispatch = dispatch("filter");
+    this.dispatch = dispatch("filter", "input");
+    this.state = null
   }
 
   on(event: string, callback: () => void) {
@@ -103,19 +130,26 @@ export default class Legend {
     this.dispatch.call("filter", null, ev);
   };
 
-  setState = (state: LegendState): HTMLElement | VNode => {
-    if (state.type === "gradient") {
-      const vnode = renderGradientLegend(state, this.dispatch);
+  setState = (state: Function | LegendState): HTMLElement | VNode => {
+
+    if (typeof state === "function") {
+      this.state = state(this.state)
+    } else {
+      this.state = state
+    }
+
+    if (this.state.type === "gradient") {
+      const vnode = renderGradientLegend(this.state, this.dispatch);
       this.node = patch(this.node, vnode);
       return this.node;
-    } else if (state.type === "nominal") {
-      const vnode = renderNominalLegend(state, {
+    } else if (this.state.type === "nominal") {
+      const vnode = renderNominalLegend(this.state, {
         handleFilter: this.handleFilter
       });
       this.node = patch(this.node, vnode);
       return this.node;
-    } else if (state.type === "stacked") {
-      const vnode = renderStackedLegend(state, {
+    } else if (this.state.type === "stacked") {
+      const vnode = renderStackedLegend(this.state, {
         handleFilter: this.handleFilter
       });
       this.node = patch(this.node, vnode);

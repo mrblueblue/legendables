@@ -43,3 +43,14 @@ gradient.setState({
     "#bdcf32"
   ]
 })
+
+gradient.on("input", function input ({value, index}) {
+  console.log(value)
+  gradient.setState(state => ({
+    ...state,
+    domain: [
+      value,
+      state.domain[1]
+    ]
+  }))
+})

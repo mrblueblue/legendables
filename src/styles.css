@@ -76,11 +76,11 @@
   background: rgba(255, 255, 255);
 }
 
-.gradient-legend .block:not(:first-child):not(:last-child) .text {
+.gradient-legend .range .block:not(:first-child):not(:last-child) .text {
   display: none;
 }
 
-.gradient-legend .block:not(:first-child):not(:last-child):hover .text {
+.gradient-legend .range .block:not(:first-child):not(:last-child):hover .text {
   display: block;
 }
 
