@@ -150,7 +150,7 @@ export function renderNominalLegend(
   ]);
 }
 
-export function renderStackedLegend(state, dispatch, updates): VNode {
+export function renderStackedLegend(state, dispatch): VNode {
   return h("div.stacked-legend", state.list.map((legend, index) => {
     if (legend.type === "gradient") {
       return renderGradientLegend({...legend, index}, dispatch)
@@ -185,22 +185,19 @@ export default class Legend {
       this.state = state
     }
 
+    let vnode
+
     if (this.state.type === "gradient") {
-      const vnode = renderGradientLegend(this.state, this.dispatch);
-      this.node = patch(this.node, vnode);
-      return this.node;
+      vnode = renderGradientLegend(this.state, this.dispatch);
     } else if (this.state.type === "nominal") {
-      const vnode = renderNominalLegend(this.state, this.dispatch);
-      this.node = patch(this.node, vnode);
-      return this.node;
+      vnode = renderNominalLegend(this.state, this.dispatch);
     } else if (this.state.type === "stacked") {
-      const vnode = renderStackedLegend(this.state, this.dispatch, {
-        handleFilter: this.handleFilter
-      });
-      this.node = patch(this.node, vnode);
-      return this.node;
+      vnode = renderStackedLegend(this.state, this.dispatch);
     } else {
       throw new Error();
     }
+
+    this.node = patch(this.node, vnode);
+    return this.node;
   };
 }
