@@ -2,6 +2,7 @@ import h from "snabbdom/h";
 import { patch } from "./vdom";
 import { VNode } from "snabbdom/vnode";
 import { dispatch, Dispatch } from "d3-dispatch";
+import { format } from "d3-format"
 
 export interface GradientLegendState {
   type: "gradient";
@@ -28,6 +29,7 @@ export interface StackedLegendState {
   type: "stacked";
   width: number;
   height: number;
+  open: boolean;
   list: Array<GradientLegendState | NominalLegendState>;
 }
 
@@ -40,35 +42,62 @@ type Handlers = {
   handleFilter: (ev: UIEvent) => void;
 };
 
-function step (domain: [number, number], index: number, bins: number = 9) {
+const commafy = d => format(",")(parseFloat(d.toFixed(2)))
+
+function rangeStep (domain: [number, number], index: number, bins: number = 9) {
   if (index === 0) {
     return domain[0]
   } else if (index + 1 === bins ){
     return domain[1]
   } else {
     const increment = ((domain[1] - domain[0]) / bins)
-    return Math.round(domain[0] + (increment * index))
+    return commafy(domain[0] + (increment * index))
   }
 }
 
 function validateNumericalInput (previousValue: number, nextValue: any): number {
   if (isNaN(parseInt(nextValue))) {
-    return previousValue
+    return parseInt(previousValue)
   } else {
-    return nextValue
+    return parseInt(nextValue)
   }
 }
 
+function renderTickIcon (state, dispatch) {
+  return h(`div.tick${state.open ? ".open" : ""}`, {on: {click: () => dispatch.call("open", this, state.index)}}, [
+    h('svg', {attrs: {viewBox: [0, 0, 48, 48]}}, [
+      h("g", [
+        h('polygon', {attrs: {points: "24,32 36,20 12,20"}})
+      ])
+    ])
+  ]);
+}
+
 function renderInput (state: GradientLegendState, domain, dispatch): VNode {
+
   return h("input", {
     hook: {
-      update: (prevNode: VNode, nextNode: VNode) => nextNode.elm.value = domain.value
+      update: (prevNode: VNode, nextNode: VNode) => {
+        nextNode.elm.value = domain.value
+      }
     },
     props: {
       type:" number", value: domain.value
     },
     on: {
-      blur: (e) => dispatch.call("input", this, {value: validateNumericalInput(domain.value, e.target.value)})
+      blur: (e) => {
+        const value = validateNumericalInput(domain.value, e.target.value)
+        const [min, max] = state.domain
+        dispatch.call("input", this, {
+          index: state.index,
+          domain: domain.index === 0 ? [value, max] : [min, value]
+        })
+      },
+      keydown: (e) => {
+        if (e.code === "Enter") {
+          e.target.blur()
+        }
+      }
     }
   })
 }
@@ -78,48 +107,59 @@ export function renderGradientLegend(
   dispatch
 ): VNode {
   return h(
-    "div.gradient-legend", [
-      h("div.range", state.range.map((color, index: number) => {
+    `div.legend.gradient-legend${state.title ? ".with-header" : ""}`, [
+      state.title && h("div.header", [state.title, renderTickIcon(state, dispatch)]),
+      state.open ? h("div.range", state.range.map((color, index: number) => {
         const isMinMax = index === 0 || index === state.range.length - 1
-        
+        const step = rangeStep(state.domain, index, state.range.length)
+        const [min, max] = state.domain
+
         return h("div.block", [
           h("div.color", { style: { background: color } }),
           h(`div.text.${isMinMax ? "extent" : "step"}`,
-            [h("span", `${step(state.domain, index, state.range.length)}`)].concat(
+            [h("span", `${step}`)].concat(
               isMinMax ? [
-                renderInput(state, {value: index === 0 ? state.domain[0] : state.domain[1]}, dispatch)
+                renderInput(state, {value: index === 0 ? min : max, index}, dispatch)
               ] : []
             )
           )
         ])
-      })),
-      h("div.lock")
+      })) : h("div"),
+      state.open ? h("div.lock") : h("div")
   ]);
 }
 
 export function renderNominalLegend(
   state: NominalLegendState,
-  updates: Handlers
+  dispatch
 ): VNode {
-  return h("div.nominal-legend", [
-    h("div.header", "Legend"),
-    h(
+  return h("div.legend.nominal-legend", [
+    state.title && h("div.header", [state.title, renderTickIcon(state, dispatch)]),
+    state.open ? h(
       "div.body",
       { style: { maxHeight: "100px" } },
       state.domain.map((value, index) =>
-        h("div.row", { on: { click: [updates.handleFilter, value] } }, [
+        h("div.row", { on: { click: () => dispatch.call("filter", this, value) } }, [
           h("div.color", {
             style: { background: state.range[index] }
           }),
           h("div.text", value)
         ])
       )
-    )
+    ) : h("div")
   ]);
 }
 
-export function renderStackedLegend(state, updates): VNode {
-  return h("div.legend");
+export function renderStackedLegend(state, dispatch, updates): VNode {
+  return h("div.stacked-legend", state.list.map((legend, index) => {
+    if (legend.type === "gradient") {
+      return renderGradientLegend({...legend, index}, dispatch)
+    } else if (legend.type === "nominal") {
+      return renderNominalLegend({...legend, index}, dispatch)
+    } else {
+      return h("div")
+    }
+  }));
 }
 
 export default class Legend {
@@ -129,17 +169,13 @@ export default class Legend {
 
   constructor(node: HTMLElement) {
     this.node = node;
-    this.dispatch = dispatch("filter", "input");
+    this.dispatch = dispatch("filter", "input", "open");
     this.state = null
   }
 
   on(event: string, callback: () => void) {
     this.dispatch.on(event, callback);
   }
-
-  handleFilter = (ev: UIEvent): void => {
-    this.dispatch.call("filter", null, ev);
-  };
 
   setState = (state: Function | LegendState): HTMLElement | VNode => {
 
@@ -154,13 +190,11 @@ export default class Legend {
       this.node = patch(this.node, vnode);
       return this.node;
     } else if (this.state.type === "nominal") {
-      const vnode = renderNominalLegend(this.state, {
-        handleFilter: this.handleFilter
-      });
+      const vnode = renderNominalLegend(this.state, this.dispatch);
       this.node = patch(this.node, vnode);
       return this.node;
     } else if (this.state.type === "stacked") {
-      const vnode = renderStackedLegend(this.state, {
+      const vnode = renderStackedLegend(this.state, this.dispatch, {
         handleFilter: this.handleFilter
       });
       this.node = patch(this.node, vnode);

@@ -2,6 +2,22 @@
   z-index: 1;
 }
 
+.legend {
+  font-size: 11px;
+}
+
+.legend .header {
+  border-bottom: 1px solid #e2e2e2;
+  color: #a7a7a7;
+  font-weight: bold;
+  margin: 4px 4px 0 4px;
+  position: relative;
+  padding-right: 20px;
+  padding-bottom: 2px;
+  display: flex;
+  flex-direction: row;
+}
+
 .nominal-legend {
   background: rgba(255, 255, 255, 0.9);
   max-width: 160px;
@@ -9,16 +25,6 @@
   border-radius: 2px;
   font-size: 11px;
   min-width: 100px;
-}
-
-.nominal-legend .header {
-  border-bottom: 1px solid #e2e2e2;
-  color: #a7a7a7;
-  font-weight: bold;
-  margin: 4px 4px 0 4px;
-  position: relative;
-  padding-right: 20px;
-  padding-bottom: 2px
 }
 
 .nominal-legend .body {
@@ -47,10 +53,20 @@
 
 .gradient-legend {
   position: relative;
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
   z-index: 2;
   min-height: 32px;
-  padding-right: 24px;
+  max-width: 160px;
+}
+
+.gradient-legend.with-header {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.gradient-legend .range {
+  display: flex;
+  justify-content: center;
 }
 
 .gradient-legend .block {
@@ -116,10 +132,23 @@
 }
 
 .gradient-legend .lock {
-  width: 24px;
-  height: 24px;
+  width: 15px;
+  height: 15px;
   padding: 4px;
   position: absolute;
   right: 0;
-  bottom: 14px;
+  bottom: 10px;
+}
+
+.tick {
+  cursor: pointer;
+  width: 15px;
+  height: 15px;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.tick.open {
+  transform: rotate(180deg);
 }

@@ -1,55 +1,111 @@
 import Legend from "../src/legend"
 
-const nominal = new Legend(document.getElementById("nominal-legend-container"))
-nominal.on('filter', (a, b) => console.log(a, b))
-nominal.setState({
-  title: "Legend",
-  type: "nominal",
-  width: 50,
-  height: 100,
-  domain: [
-    "Manhattan",
-    "Queens",
-    "Bronx",
-    "Brooklyn",
-    "Staten Island",
-    "Other"
-  ],
-  range: [
-    "#ea5545",
-    "#f46a9b",
-    "#ef9b20",
-    "#edbf33",
-    "#ede15b",
-    "#bdcf32"
-  ]
-})
-
 const gradient = new Legend(document.getElementById("gradient-legend-container"))
 gradient.setState({
-  title: "Legend",
-  type: "gradient",
+  type: "stacked",
   width: 50,
-  height: 100,
-  domain: [
-    0, 100
-  ],
-  range: [
-    "#ea5545",
-    "#f46a9b",
-    "#ef9b20",
-    "#edbf33",
-    "#ede15b",
-    "#bdcf32"
+  height: 50,
+  list: [
+    {
+      title: "Legend",
+      type: "gradient",
+      width: 50,
+      height: 100,
+      domain: [
+        0, 100
+      ],
+      range: [
+        "#ea5545",
+        "#f46a9b",
+        "#ef9b20",
+        "#edbf33",
+        "#ede15b",
+        "#bdcf32"
+      ]
+    },
+    {
+      title: "Legend",
+      type: "nominal",
+      width: 50,
+      height: 100,
+      domain: [
+        "Manhattan",
+        "Queens",
+        "Bronx",
+        "Brooklyn",
+        "Staten Island",
+        "Other"
+      ],
+      range: [
+        "#ea5545",
+        "#f46a9b",
+        "#ef9b20",
+        "#edbf33",
+        "#ede15b",
+        "#bdcf32"
+      ]
+    },
+    {
+      title: "Legend",
+      type: "gradient",
+      width: 50,
+      height: 100,
+      domain: [
+        0, 100
+      ],
+      range: [
+        "#ea5545",
+        "#f46a9b",
+        "#ef9b20",
+        "#edbf33",
+        "#ede15b",
+        "#bdcf32"
+      ]
+    },
+    {
+      title: "Legend",
+      type: "nominal",
+      open: true,
+      width: 50,
+      height: 100,
+      domain: [
+        "Manhattan",
+        "Queens",
+        "Bronx",
+        "Brooklyn",
+        "Staten Island",
+        "Other"
+      ],
+      range: [
+        "#ea5545",
+        "#f46a9b",
+        "#ef9b20",
+        "#edbf33",
+        "#ede15b",
+        "#bdcf32"
+      ]
+    }
   ]
 })
 
-gradient.on("input", function input ({value, index}) {
-  gradient.setState(state => ({
-    ...state,
-    domain: [
-      value,
-      state.domain[1]
-    ]
-  }))
+gradient.on("input", function input ({domain, index}) {
+  gradient.setState(state => {
+    const list = state.list.slice()
+    list[index].domain = domain
+    return {
+      ...state,
+      list
+    }
+  })
+})
+
+gradient.on("open", (index) => {
+  gradient.setState(state => {
+    const list = state.list.slice()
+    list[index].open = !list[index].open
+    return {
+      ...state,
+      list
+    }
+  })
 })
