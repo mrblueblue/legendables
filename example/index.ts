@@ -9,6 +9,7 @@ gradient.setState({
     {
       title: "Legend",
       type: "gradient",
+      locked: true,
       width: 50,
       height: 100,
       domain: [
@@ -48,6 +49,7 @@ gradient.setState({
     {
       title: "Legend",
       type: "gradient",
+      locked: false,
       width: 50,
       height: 100,
       domain: [
@@ -63,7 +65,7 @@ gradient.setState({
       ]
     },
     {
-      title: "Legend",
+      title: "amount[contributions]",
       type: "nominal",
       open: true,
       width: 50,
@@ -87,6 +89,18 @@ gradient.setState({
     }
   ]
 })
+
+gradient.on("lock", function input ({locked, index}) {
+  gradient.setState(state => {
+    const list = state.list.slice()
+    list[index].locked = !locked
+    return {
+      ...state,
+      list
+    }
+  })
+})
+
 
 gradient.on("input", function input ({domain, index}) {
   gradient.setState(state => {
