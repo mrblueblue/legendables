@@ -1,11 +1,8 @@
 .legendables {
   z-index: 1;
-}
-
-.stacked-legend {
   position: absolute;
-  left: 0;
-  bottom: 0px
+  left: 8px;
+  bottom: 8px
 }
 
 .legend {
@@ -18,10 +15,15 @@
   font-weight: bold;
   margin: 4px 4px 0 4px;
   position: relative;
-  padding-right: 20px;
   padding-bottom: 2px;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+}
+
+.legend .header .title-text {
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .nominal-legend {
@@ -33,7 +35,7 @@
   min-width: 100px;
 }
 
-.nominal-legend.stacked {
+.nominal-legend.legendables {
   border: 1px solid white;
 }
 
@@ -42,31 +44,34 @@
   padding: 0 4px 4px 4px;
 }
 
-.nominal-legend .row {
+.nominal-legend .legend-row {
   display: flex;
   align-items: center;
   cursor: default;
   min-height: 16px;
 }
 
-.nominal-legend .row .color {
+.nominal-legend .legend-row .color {
   width: 8px;
   height: 8px;
   flex-shrink: 0;
 }
 
-.nominal-legend .row .text {
+.nominal-legend .legend-row .text {
   flex-grow: 1;
   padding: 4px;
   line-height: 1;
 }
 
 .gradient-legend {
-  position: relative;
   display: flex;
   flex-direction: column;
   z-index: 2;
   max-width: 160px;
+}
+
+.gradient-legend.legendables {
+
 }
 
 .gradient-legend.with-header {
@@ -150,9 +155,6 @@
   cursor: pointer;
   width: 15px;
   height: 15px;
-  position: absolute;
-  right: 0;
-  top: 0;
 }
 
 .tick.open {

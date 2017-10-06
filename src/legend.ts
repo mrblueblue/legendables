@@ -56,6 +56,7 @@ function rangeStep(domain: [number, number], index: number, bins: number = 9) {
 }
 
 function validateNumericalInput(previousValue: number, nextValue: any): number {
+  console.log(nextValue)
   if (isNaN(parseInt(nextValue))) {
     return parseInt(previousValue);
   } else {
@@ -96,6 +97,7 @@ function renderLockIcon(locked, index, dispatch) {
 }
 
 function renderInput(state: GradientLegendState, domain, dispatch): VNode {
+  console.log(domain)
   return h("input", {
     hook: {
       update: (prevNode: VNode, nextNode: VNode) => {
@@ -128,9 +130,10 @@ export function renderGradientLegend(
   state: GradientLegendState,
   dispatch
 ): VNode {
-  return h(`div.legend.gradient-legend${state.title ? ".with-header" : ""}`, [
-    state.title &&
-      h("div.header", [state.title, renderTickIcon(state, dispatch)]),
+  const stacked = typeof state.index === "number";
+  return h(`div.legend.gradient-legend${stacked ? ".with-header" : ".legendables"}`, [
+    stacked ?
+      h("div.header", [h("div.title-text", [state.title]), renderTickIcon(state, dispatch)]) : h("div"),
     state.open
       ? h("div.range", [
           ...state.range.map((color, index: number) => {
@@ -142,12 +145,12 @@ export function renderGradientLegend(
               h("div.color", { style: { background: color } }),
               h(
                 `div.text.${isMinMax ? "extent" : "step"}`,
-                [h("span", `${step}`)].concat(
+                [h("span", `${state.domain.length > 2 ? state.domain[index] : step}`)].concat(
                   isMinMax
                     ? [
                         renderInput(
                           state,
-                          { value: index === 0 ? min : max, index },
+                          { value: state.domain.length === 2 ? state.domain[index === 0 ? 0 : 1] : state.domain[index], index },
                           dispatch
                         )
                       ]
@@ -167,16 +170,16 @@ export function renderNominalLegend(
   dispatch
 ): VNode {
   const stacked = typeof state.index === "number";
-  return h(`div.legend.nominal-legend${stacked ? ".stacked" : ""}`, [
+  return h(`div.legend.nominal-legend${stacked ? "" : ".legendables"}`, [
     state.title &&
-      h("div.header", [state.title, renderTickIcon(state, dispatch)]),
+      h("div.header", [h("div.title-text", [state.title]), renderTickIcon(state, dispatch)]),
     state.open
       ? h(
           "div.body",
           { style: stacked ? {} : { maxHeight: "100px" } },
           state.domain.map((value, index) =>
             h(
-              "div.row",
+              "div.legend-row",
               { on: { click: () => dispatch.call("filter", this, value) } },
               [
                 h("div.color", {
@@ -193,7 +196,7 @@ export function renderNominalLegend(
 
 export function renderStackedLegend(state, dispatch): VNode {
   return h(
-    "div.stacked-legend",
+    "div.legendables",
     state.list.map((legend, index) => {
       if (legend.type === "gradient") {
         return renderGradientLegend({ ...legend, index }, dispatch);
@@ -237,7 +240,7 @@ export default class Legend {
     } else if (this.state.type === "stacked") {
       vnode = renderStackedLegend(this.state, this.dispatch);
     } else {
-      throw new Error();
+      vnode = h("div")
     }
 
     this.node = patch(this.node, vnode);
