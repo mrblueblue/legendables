@@ -82,6 +82,8 @@
   display: flex;
   justify-content: center;
   margin-top: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .gradient-legend .block {
@@ -104,7 +106,7 @@
   color: #868686;
   font-size: 10px;
   padding: 2px 2px 0 2px;
-  background: rgba(255, 255, 255);
+  background: hsla(0,0%,100%,.4);
 }
 
 .gradient-legend .block .step {
@@ -146,10 +148,28 @@
   outline: none;
 }
 
+
+.gradient-legend .unlocked:not(:hover) {
+  opacity: 0;
+}
+
 .gradient-legend .lock {
   width: 15px;
   height: 15px;
 }
+
+.gradient-legend .lock svg {
+  fill: #a7a7a7;
+}
+
+.gradient-legend .lock:hover {
+  cursor: pointer;
+}
+
+.gradient-legend .lock:hover svg {
+  fill: #22a7f0;
+}
+
 
 .tick {
   cursor: pointer;

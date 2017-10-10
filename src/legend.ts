@@ -43,6 +43,7 @@ type Handlers = {
 };
 
 const commafy = d => format(",")(parseFloat(d.toFixed(2)));
+const formatNumber = (d) => String(d).length > 4 ? format(".2s")(d) : commafy(d)
 
 function rangeStep(domain: [number, number], index: number, bins: number = 9) {
   if (index === 0) {
@@ -51,12 +52,11 @@ function rangeStep(domain: [number, number], index: number, bins: number = 9) {
     return domain[1];
   } else {
     const increment = (domain[1] - domain[0]) / bins;
-    return commafy(domain[0] + increment * index);
+    return domain[0] + increment * index;
   }
 }
 
 function validateNumericalInput(previousValue: number, nextValue: any): number {
-  console.log(nextValue)
   if (isNaN(parseInt(nextValue))) {
     return parseInt(previousValue);
   } else {
@@ -78,11 +78,11 @@ function renderTickIcon(state, dispatch) {
 
 function renderLockIcon(locked, index, dispatch) {
   return h(
-    `d.lock${locked ? ".locked" : ".unlocked"}`,
+    `div.lock${locked ? ".locked" : ".unlocked"}`,
     { on: { click: () => dispatch.call("lock", this, { locked, index }) } },
     [
       h("svg", { attrs: { viewBox: [0, 0, 48, 48] } }, [
-        h("g", [
+        h("g", { style: { stroke: "white" } }, [
           h("path", {
             attrs: {
               d: locked
@@ -97,7 +97,6 @@ function renderLockIcon(locked, index, dispatch) {
 }
 
 function renderInput(state: GradientLegendState, domain, dispatch): VNode {
-  console.log(domain)
   return h("input", {
     hook: {
       update: (prevNode: VNode, nextNode: VNode) => {
@@ -138,7 +137,7 @@ export function renderGradientLegend(
       ? h("div.range", [
           ...state.range.map((color, index: number) => {
             const isMinMax = index === 0 || index === state.range.length - 1;
-            const step = rangeStep(state.domain, index, state.range.length);
+            const step = formatNumber(rangeStep(state.domain, index, state.range.length));
             const [min, max] = state.domain;
 
             return h("div.block", [
