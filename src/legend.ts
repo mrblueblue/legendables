@@ -66,14 +66,21 @@ function validateNumericalInput(previousValue: number, nextValue: any): number {
 
 function renderTickIcon(state, dispatch) {
   return h(
-    `div.tick${state.open ? ".open" : ""}`,
-    { on: { click: () => dispatch.call("open", this, state.index) } },
-    [
-      h("svg", { attrs: { viewBox: [0, 0, 48, 48] } }, [
-        h("g", [h("polygon", { attrs: { points: "24,32 36,20 12,20" } })])
-      ])
-    ]
+    "div.tick",
+    { on: { click: () => dispatch.call("open", this, state.index) } }
   );
+}
+
+function renderToggleIcon(state, dispatch) {
+  return h("div.open-toggle",
+    { 
+      on: { 
+        click: () => {
+          dispatch.call("toggle", this, state) 
+        }
+      }
+    }
+  )
 }
 
 function renderLockIcon(locked, index, dispatch) {
@@ -108,6 +115,9 @@ function renderInput(state: GradientLegendState, domain, dispatch): VNode {
       value: domain.value
     },
     on: {
+      focus: e => {
+        e.target.select()
+      },
       blur: e => {
         const value = validateNumericalInput(domain.value, e.target.value);
         const [min, max] = state.domain;
@@ -130,10 +140,10 @@ export function renderGradientLegend(
   dispatch
 ): VNode {
   const stacked = typeof state.index === "number";
-  return h(`div.legend.gradient-legend${stacked ? ".with-header" : ".legendables"}`, [
+  return h(`div.legend.gradient-legend${stacked ? ".with-header" : ".legendables"}${state.open ? ".open" : ".collapsed"}`, [
     stacked ?
-      h("div.header", [h("div.title-text", [state.title]), renderTickIcon(state, dispatch)]) : h("div"),
-    state.open
+      h("div.header", [h("div.title-text", state.title), renderTickIcon(state, dispatch)]) : h("div"),
+    state.open 
       ? h("div.range", [
           ...state.range.map((color, index: number) => {
             const isMinMax = index === 0 || index === state.range.length - 1;
@@ -157,10 +167,11 @@ export function renderGradientLegend(
                 )
               )
             ]);
-          }),
-          renderLockIcon(state.locked, state.index, dispatch)
+          })
         ])
-      : h("div")
+      : h("div"),
+    state.open ? 
+      renderLockIcon(state.locked, state.index, dispatch) : h("div")
   ]);
 }
 
@@ -169,13 +180,13 @@ export function renderNominalLegend(
   dispatch
 ): VNode {
   const stacked = typeof state.index === "number";
-  return h(`div.legend.nominal-legend${stacked ? "" : ".legendables"}`, [
+  return h(`div.legend.nominal-legend${stacked ? "" : ".legendables"}${state.open ? ".open" : ".collapsed"}`, [
+    !stacked ? renderToggleIcon(state, dispatch) : h("div"),
     state.title &&
-      h("div.header", [h("div.title-text", [state.title]), renderTickIcon(state, dispatch)]),
+      h("div.header", [h("div.title-text", state.title), renderTickIcon(state, dispatch)]),
     state.open
       ? h(
           "div.body",
-          { style: stacked ? {} : { maxHeight: "100px" } },
           state.domain.map((value, index) =>
             h(
               "div.legend-row",
@@ -195,17 +206,19 @@ export function renderNominalLegend(
 
 export function renderStackedLegend(state, dispatch): VNode {
   return h(
-    "div.legendables",
-    state.list.map((legend, index) => {
-      if (legend.type === "gradient") {
-        return renderGradientLegend({ ...legend, index }, dispatch);
-      } else if (legend.type === "nominal") {
-        return renderNominalLegend({ ...legend, index }, dispatch);
-      } else {
-        return h("div");
-      }
-    })
-  );
+    `div.legendables${state.open ? ".open" : ".collapsed"}${state.list.length > 1 ? ".show-ticks" : ""}`,
+    { style: {maxHeight: `${state.maxHeight}px` } }, 
+      [renderToggleIcon(state, dispatch)].concat(
+        state.list.map((legend, index) => {
+          if (legend.type === "gradient") {
+            return renderGradientLegend({ ...legend, index }, dispatch);
+          } else if (legend.type === "nominal") {
+            return renderNominalLegend({ ...legend, index }, dispatch);
+          } 
+        }
+      )
+    )
+  )
 }
 
 export default class Legend {
@@ -215,7 +228,7 @@ export default class Legend {
 
   constructor(node: HTMLElement) {
     this.node = node;
-    this.dispatch = dispatch("filter", "input", "open", "lock");
+    this.dispatch = dispatch("filter", "input", "open", "lock", "toggle", "doneRender");
     this.state = null;
   }
 
@@ -243,6 +256,8 @@ export default class Legend {
     }
 
     this.node = patch(this.node, vnode);
+    this.dispatch.call("doneRender", this, state)
+    
     return this.node;
   };
 }
