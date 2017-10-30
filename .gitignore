@@ -4,3 +4,4 @@ node_modules/
 *.map
 !*.config.js
 npm-debug.log
+src/styles.css
