@@ -12,6 +12,7 @@ export interface GradientLegendState {
   open: boolean;
   range: Array<string>;
   domain: [number, number];
+  position?: "top-right" | "bottom-left";
 }
 
 export interface NominalLegendState {
@@ -23,6 +24,7 @@ export interface NominalLegendState {
   open: boolean;
   range: Array<string>;
   domain: Array<string>;
+  position?: "top-right" | "bottom-left";
 }
 
 export interface StackedLegendState {
@@ -73,10 +75,10 @@ function renderTickIcon(state, dispatch) {
 
 function renderToggleIcon(state, dispatch) {
   return h("div.open-toggle",
-    { 
-      on: { 
+    {
+      on: {
         click: () => {
-          dispatch.call("toggle", this, state) 
+          dispatch.call("toggle", this, state)
         }
       }
     }
@@ -140,10 +142,10 @@ export function renderGradientLegend(
   dispatch
 ): VNode {
   const stacked = typeof state.index === "number";
-  return h(`div.legend.gradient-legend${stacked ? ".with-header" : ".legendables"}${state.open ? ".open" : ".collapsed"}`, [
+  return h(`div.legend.gradient-legend${stacked ? ".with-header" : ".legendables"}${state.open ? ".open" : ".collapsed"}${state.position ? `.${state.position}` : ""}`, [
     stacked ?
       h("div.header", [h("div.title-text", state.title), renderTickIcon(state, dispatch)]) : h("div"),
-    state.open 
+    state.open
       ? h("div.range", [
           ...state.range.map((color, index: number) => {
             const isMinMax = index === 0 || index === state.range.length - 1;
@@ -170,7 +172,7 @@ export function renderGradientLegend(
           })
         ])
       : h("div"),
-    state.open ? 
+    state.open ?
       renderLockIcon(state.locked, state.index, dispatch) : h("div")
   ]);
 }
@@ -180,7 +182,7 @@ export function renderNominalLegend(
   dispatch
 ): VNode {
   const stacked = typeof state.index === "number";
-  return h(`div.legend.nominal-legend${stacked ? "" : ".legendables"}${state.open ? ".open" : ".collapsed"}`, [
+  return h(`div.legend.nominal-legend${stacked ? "" : ".legendables"}${state.open ? ".open" : ".collapsed"}${state.position ? `.${state.position}` : ""}`, [
     !stacked ? renderToggleIcon(state, dispatch) : h("div"),
     state.title &&
       h("div.header", [h("div.title-text", state.title), renderTickIcon(state, dispatch)]),
@@ -207,14 +209,14 @@ export function renderNominalLegend(
 export function renderStackedLegend(state, dispatch): VNode {
   return h(
     `div.legendables${state.open ? ".open" : ".collapsed"}${state.list.length > 1 ? ".show-ticks" : ""}`,
-    { style: {maxHeight: `${state.maxHeight}px` } }, 
+    { style: {maxHeight: `${state.maxHeight}px` } },
       [renderToggleIcon(state, dispatch)].concat(
         state.list.map((legend, index) => {
           if (legend.type === "gradient") {
             return renderGradientLegend({ ...legend, index }, dispatch);
           } else if (legend.type === "nominal") {
             return renderNominalLegend({ ...legend, index }, dispatch);
-          } 
+          }
         }
       )
     )
@@ -257,7 +259,7 @@ export default class Legend {
 
     this.node = patch(this.node, vnode);
     this.dispatch.call("doneRender", this, state)
-    
+
     return this.node;
   };
 }

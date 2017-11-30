@@ -11,6 +11,13 @@ $blue-main: #22A7F0;
   overflow: auto;
   font-size: 11px;
 
+  &.top-right {
+    right: 16px;
+    top: 8px;
+    bottom: auto;
+    left: auto;
+  }
+
   &:hover {
     background: white;
   }
@@ -147,7 +154,7 @@ $blue-main: #22A7F0;
 
   &.nominal-legend {
     max-height: 50%;
-  } 
+  }
 
   &.gradient-legend {
     background: none;
@@ -324,7 +331,7 @@ $blue-main: #22A7F0;
     }
   }
 
-  .block { 
+  .block {
     input {
       display: none;
     }
@@ -333,7 +340,7 @@ $blue-main: #22A7F0;
         input {
           display: inline-block !important;
         }
-        
+
         background: none;
 
         span {
@@ -341,6 +348,6 @@ $blue-main: #22A7F0;
         }
       }
     }
-  } 
+  }
 }
 
