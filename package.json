@@ -1,13 +1,14 @@
 {
   "name": "legendables",
-  "version": "1.0.0-rc.3",
+  "version": "1.0.0-rc.6",
   "description": "declarative legend",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc; npm run build:styles",
     "build:styles": "node-sass -- src/styles.scss src/styles.css",
     "build:umd": "rollup -c -i index.ts -o dist/legendables.js",
     "build:umd:min": "NODE_ENV=production rollup -c -i index.ts -o dist/legendables.min.js",
+    "prepublish": "npm run build",
     "start": "webpack-dev-server --content-base ./example --config ./example/webpack.config.js",
     "watch": "tsc --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
