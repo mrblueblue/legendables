@@ -35,7 +35,7 @@ $blue-main: #22A7F0;
 
     .open-toggle {
       position: relative;
-      background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect x='8' y='8' fill='#EA5545' width='8' height='8'/><rect x='8' y='20' fill='#87BC43' width='8' height='8'/><rect x='8' y='32' fill='#3EA3DB' width='8' height='8'/><rect x='20' y='10' fill='#C7C7C7' width='20' height='4'/><rect x='20' y='22' fill='#C7C7C7' width='20' height='4'/><rect x='20' y='34' fill='#C7C7C7' width='20' height='4'/></svg>");
+      background: url("data:image/svg+xml;utf8, <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect x='8' y='8' fill='%23EA5545' width='8' height='8'/><rect x='8' y='20' fill='%2387BC43' width='8' height='8'/><rect x='8' y='32' fill='%233EA3DB' width='8' height='8'/><rect x='20' y='10' fill='%23C7C7C7' width='20' height='4'/><rect x='20' y='22' fill='%23C7C7C7' width='20' height='4'/><rect x='20' y='34' fill='%23C7C7C7' width='20' height='4'/></svg>");
       background-size: cover;
 
       &:before, &:after {
