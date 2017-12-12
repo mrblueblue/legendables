@@ -113,7 +113,7 @@ function renderInput(state: GradientLegendState, domain, dispatch): VNode {
       }
     },
     props: {
-      type: " number",
+      type: "number",
       value: domain.value
     },
     on: {
