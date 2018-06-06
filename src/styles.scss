@@ -229,6 +229,7 @@ $blue-main: #22A7F0;
 }
 
 .gradient-legend .block .text {
+  white-space: nowrap;
   position: absolute;
   text-align: center;
   transform: translateX(-50%);
