@@ -13,7 +13,17 @@ var vdom_1 = require("./vdom");
 var d3_dispatch_1 = require("d3-dispatch");
 var d3_format_1 = require("d3-format");
 var commafy = function (d) { return d3_format_1.format(",")(parseFloat(d.toFixed(2))); };
-var formatNumber = function (d) { return String(d).length > 4 ? d3_format_1.format(".2s")(d) : commafy(d); };
+var formatNumber = function (d) {
+    if (String(d).length <= 4) {
+        return commafy(d);
+    }
+    else if (d < 0.0001) {
+        return d3_format_1.format(".2")(d);
+    }
+    else {
+        return d3_format_1.format(".2s")(d);
+    }
+};
 function rangeStep(domain, index, bins) {
     if (bins === void 0) { bins = 9; }
     if (index === 0) {
@@ -28,11 +38,11 @@ function rangeStep(domain, index, bins) {
     }
 }
 function validateNumericalInput(previousValue, nextValue) {
-    if (isNaN(parseInt(nextValue))) {
-        return parseInt(previousValue);
+    if (isNaN(parseFloat(nextValue))) {
+        return parseFloat(previousValue);
     }
     else {
-        return parseInt(nextValue);
+        return parseFloat(nextValue);
     }
 }
 function renderTickIcon(state, dispatch) {
