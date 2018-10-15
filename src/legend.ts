@@ -23,7 +23,7 @@ export interface NominalLegendState {
   height?: number;
   open: boolean;
   range: Array<string>;
-  domain: Array<string>;
+  domain: [string, boolean];
   position?: "top-right" | "bottom-left";
 }
 
@@ -204,7 +204,7 @@ export function renderNominalLegend(
                 h("div.color", {
                   style: { background: state.range[index] }
                 }),
-                h("div.text", value)
+                h("div.text", `${value}`)
               ]
             )
           )
