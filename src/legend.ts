@@ -45,7 +45,15 @@ type Handlers = {
 };
 
 const commafy = d => format(",")(parseFloat(d.toFixed(2)));
-const formatNumber = (d) => String(d).length > 4 ? format(".2s")(d) : commafy(d)
+const formatNumber = (d) => {
+  if (String(d).length <= 4) {
+    return commafy(d)
+  } else if (d < 0.0001) {
+    return format(".2")(d)
+  } else {
+    return format(".2s")(d)
+  }
+}
 
 function rangeStep(domain: [number, number], index: number, bins: number = 9) {
   if (index === 0) {
@@ -59,10 +67,10 @@ function rangeStep(domain: [number, number], index: number, bins: number = 9) {
 }
 
 function validateNumericalInput(previousValue: number, nextValue: any): number {
-  if (isNaN(parseInt(nextValue))) {
-    return parseInt(previousValue);
+  if (isNaN(parseFloat(nextValue))) {
+    return parseFloat(previousValue);
   } else {
-    return parseInt(nextValue);
+    return parseFloat(nextValue);
   }
 }
 
@@ -113,7 +121,6 @@ function renderInput(state: GradientLegendState, domain, dispatch): VNode {
       }
     },
     props: {
-      type: "number",
       value: domain.value
     },
     on: {
