@@ -23,7 +23,7 @@ export interface NominalLegendState {
   height?: number;
   open: boolean;
   range: Array<string>;
-  domain: Array<string>;
+  domain: [string, boolean];
   position?: "top-right" | "bottom-left";
 }
 
