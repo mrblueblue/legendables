@@ -144,7 +144,7 @@ function renderNominalLegend(state, dispatch) {
                     h_1.default("div.color", {
                         style: { background: state.range[index] }
                     }),
-                    h_1.default("div.text", value)
+                    h_1.default("div.text", "" + value)
                 ]);
             }))
             : h_1.default("div")
