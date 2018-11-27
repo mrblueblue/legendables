@@ -56,15 +56,13 @@ const formatNumber = (d) => {
 }
 
 function rangeStep(domain: [number, number], index: number, bins: number = 9) {
-    if(domain && Array.isArray(domain)) {
-        if (index === 0) {
-            return domain[0];
-        } else if (index + 1 === bins) {
-            return domain[1];
-        } else {
-            const increment = (domain[1] - domain[0]) / bins;
-            return domain[0] + increment * index;
-        }
+    if (index === 0) {
+        return domain[0];
+    } else if (index + 1 === bins) {
+        return domain[1];
+    } else {
+        const increment = (domain[1] - domain[0]) / bins;
+        return domain[0] + increment * index;
     }
 }
 
@@ -158,8 +156,8 @@ export function renderGradientLegend(
       ? h("div.range", [
           ...state.range.map((color, index: number) => {
             const isMinMax = index === 0 || index === state.range.length - 1;
-            const step = formatNumber(rangeStep(state.domain, index, state.range.length));
-            const domain = (state.domain && Array.isArray(state.domain)) ? state.domain : [0, 0]
+            const step = Array.isArray(state.domain) ? formatNumber(rangeStep(state.domain, index, state.range.length)) : null;
+            const domain = Array.isArray(state.domain) ? state.domain : [null, null]
             const [min, max] = domain;
 
             return h("div.block", [
