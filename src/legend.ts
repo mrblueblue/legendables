@@ -56,14 +56,16 @@ const formatNumber = (d) => {
 }
 
 function rangeStep(domain: [number, number], index: number, bins: number = 9) {
-  if (index === 0) {
-    return domain[0];
-  } else if (index + 1 === bins) {
-    return domain[1];
-  } else {
-    const increment = (domain[1] - domain[0]) / bins;
-    return domain[0] + increment * index;
-  }
+    if(domain && Array.isArray(domain)) {
+        if (index === 0) {
+            return domain[0];
+        } else if (index + 1 === bins) {
+            return domain[1];
+        } else {
+            const increment = (domain[1] - domain[0]) / bins;
+            return domain[0] + increment * index;
+        }
+    }
 }
 
 function validateNumericalInput(previousValue: number, nextValue: any): number {
@@ -157,18 +159,19 @@ export function renderGradientLegend(
           ...state.range.map((color, index: number) => {
             const isMinMax = index === 0 || index === state.range.length - 1;
             const step = formatNumber(rangeStep(state.domain, index, state.range.length));
-            const [min, max] = state.domain;
+            const domain = (state.domain && Array.isArray(state.domain)) ? state.domain : [0, 0]
+            const [min, max] = domain;
 
             return h("div.block", [
               h("div.color", { style: { background: color } }),
               h(
                 `div.text.${isMinMax ? "extent" : "step"}`,
-                [h("span", `${state.domain.length > 2 ? state.domain[index] : step}`)].concat(
+                [h("span", `${domain.length > 2 ? domain[index] : step}`)].concat(
                   isMinMax
                     ? [
                         renderInput(
                           state,
-                          { value: state.domain.length === 2 ? state.domain[index === 0 ? 0 : 1] : state.domain[index], index },
+                          { value: domain.length === 2 ? domain[index === 0 ? 0 : 1] : domain[index], index },
                           dispatch
                         )
                       ]
