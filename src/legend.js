@@ -26,15 +26,21 @@ var formatNumber = function (d) {
 };
 function rangeStep(domain, index, bins) {
     if (bins === void 0) { bins = 9; }
-    if (index === 0) {
-        return domain[0];
-    }
-    else if (index + 1 === bins) {
-        return domain[1];
+    if (Array.isArray(domain)) {
+        debugger;
+        if (index === 0) {
+            return domain[0];
+        }
+        else if (index + 1 === bins) {
+            return domain[1];
+        }
+        else {
+            var increment = (domain[1] - domain[0]) / bins;
+            return domain[0] + increment * index;
+        }
     }
     else {
-        var increment = (domain[1] - domain[0]) / bins;
-        return domain[0] + increment * index;
+        return 0;
     }
 }
 function validateNumericalInput(previousValue, nextValue) {
@@ -115,12 +121,13 @@ function renderGradientLegend(state, dispatch) {
             ? h_1.default("div.range", state.range.map(function (color, index) {
                 var isMinMax = index === 0 || index === state.range.length - 1;
                 var step = formatNumber(rangeStep(state.domain, index, state.range.length));
-                var _a = state.domain, min = _a[0], max = _a[1];
+                var domain = (state.domain && Array.isArray(state.domain)) ? state.domain : [0, 0];
+                var min = domain[0], max = domain[1];
                 return h_1.default("div.block", [
                     h_1.default("div.color", { style: { background: color } }),
-                    h_1.default("div.text." + (isMinMax ? "extent" : "step"), [h_1.default("span", "" + (state.domain.length > 2 ? state.domain[index] : step))].concat(isMinMax
+                    h_1.default("div.text." + (isMinMax ? "extent" : "step"), [h_1.default("span", "" + (domain.length > 2 ? domain[index] : step))].concat(isMinMax
                         ? [
-                            renderInput(state, { value: state.domain.length === 2 ? state.domain[index === 0 ? 0 : 1] : state.domain[index], index: index }, dispatch)
+                            renderInput(state, { value: domain.length === 2 ? domain[index === 0 ? 0 : 1] : domain[index], index: index }, dispatch)
                         ]
                         : []))
                 ]);
