@@ -12,9 +12,7 @@ var h_1 = require("snabbdom/h");
 var vdom_1 = require("./vdom");
 var d3_dispatch_1 = require("d3-dispatch");
 var d3_format_1 = require("d3-format");
-var commafy = function (d) {
-    return typeof d === "number" ? d3_format_1.format(",")(parseFloat(d.toFixed(2))) : d;
-};
+var commafy = function (d) { return typeof d === "number" ? d3_format_1.format(",")(parseFloat(d.toFixed(2))) : d; };
 var formatNumber = function (d) {
     if (String(d).length <= 4) {
         return commafy(d);
@@ -49,9 +47,7 @@ function validateNumericalInput(previousValue, nextValue) {
 }
 function renderTickIcon(state, dispatch) {
     var _this = this;
-    return h_1.default("div.tick", {
-        on: { click: function () { return dispatch.call("open", _this, state.index); } }
-    });
+    return h_1.default("div.tick", { on: { click: function () { return dispatch.call("open", _this, state.index); } } });
 }
 function renderToggleIcon(state, dispatch) {
     var _this = this;
@@ -113,42 +109,26 @@ function renderInput(state, domain, dispatch) {
 function renderGradientLegend(state, dispatch) {
     var stacked = typeof state.index === "number";
     return h_1.default("div.legend.gradient-legend" + (stacked ? ".with-header" : ".legendables") + (state.open ? ".open" : ".collapsed") + (state.position ? "." + state.position : ""), [
-        stacked
-            ? h_1.default("div.header", [
-                h_1.default("div.title-text", state.title),
-                renderTickIcon(state, dispatch)
-            ])
-            : h_1.default("div"),
+        stacked ?
+            h_1.default("div.header", [h_1.default("div.title-text", state.title), renderTickIcon(state, dispatch)]) : h_1.default("div"),
         state.open
             ? h_1.default("div.range", state.range.map(function (color, index) {
                 var isMinMax = index === 0 || index === state.range.length - 1;
-                var step = Array.isArray(state.domain)
-                    ? formatNumber(rangeStep(state.domain, index, state.range.length))
-                    : null;
-                var domain = Array.isArray(state.domain)
-                    ? state.domain
-                    : [null, null];
+                var step = Array.isArray(state.domain) ? formatNumber(rangeStep(state.domain, index, state.range.length)) : null;
+                var domain = Array.isArray(state.domain) ? state.domain : [null, null];
                 var min = domain[0], max = domain[1];
                 return h_1.default("div.block", [
                     h_1.default("div.color", { style: { background: color } }),
-                    h_1.default("div.text." + (isMinMax ? "extent" : "step"), [
-                        h_1.default("span", "" + (domain.length > 2 ? domain[index] : step))
-                    ].concat(isMinMax
+                    h_1.default("div.text." + (isMinMax ? "extent" : "step"), [h_1.default("span", "" + (domain.length > 2 ? domain[index] : step))].concat(isMinMax
                         ? [
-                            renderInput(state, {
-                                value: domain.length === 2
-                                    ? domain[index === 0 ? 0 : 1]
-                                    : domain[index],
-                                index: index
-                            }, dispatch)
+                            renderInput(state, { value: domain.length === 2 ? domain[index === 0 ? 0 : 1] : domain[index], index: index }, dispatch)
                         ]
                         : []))
                 ]);
             }).slice())
             : h_1.default("div"),
-        state.open
-            ? renderLockIcon(state.locked, state.index, dispatch)
-            : h_1.default("div")
+        state.open ?
+            renderLockIcon(state.locked, state.index, dispatch) : h_1.default("div")
     ]);
 }
 exports.renderGradientLegend = renderGradientLegend;
@@ -158,10 +138,7 @@ function renderNominalLegend(state, dispatch) {
     return h_1.default("div.legend.nominal-legend" + (stacked ? "" : ".legendables") + (state.open ? ".open" : ".collapsed") + (state.position ? "." + state.position : ""), [
         !stacked ? renderToggleIcon(state, dispatch) : h_1.default("div"),
         state.title &&
-            h_1.default("div.header", [
-                h_1.default("div.title-text", state.title),
-                renderTickIcon(state, dispatch)
-            ]),
+            h_1.default("div.header", [h_1.default("div.title-text", state.title), renderTickIcon(state, dispatch)]),
         state.open
             ? h_1.default("div.body", state.domain.map(function (value, index) {
                 return h_1.default("div.legend-row", { on: { click: function () { return dispatch.call("filter", _this, value); } } }, [

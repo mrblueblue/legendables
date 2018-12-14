@@ -44,28 +44,26 @@ type Handlers = {
   handleFilter: (ev: UIEvent) => void;
 };
 
-const commafy = d =>
-  typeof d === "number" ? format(",")(parseFloat(d.toFixed(2))) : d;
-
-const formatNumber = d => {
+const commafy = d => typeof d === "number" ? format(",")(parseFloat(d.toFixed(2))) : d;
+const formatNumber = (d) => {
   if (String(d).length <= 4) {
-    return commafy(d);
+    return commafy(d)
   } else if (d < 0.0001) {
-    return format(".2")(d);
+    return format(".2")(d)
   } else {
-    return format(".2s")(d);
+    return format(".2s")(d)
   }
-};
+}
 
 function rangeStep(domain: [number, number], index: number, bins: number = 9) {
-  if (index === 0) {
-    return domain[0];
-  } else if (index + 1 === bins) {
-    return domain[1];
-  } else {
-    const increment = (domain[1] - domain[0]) / bins;
-    return domain[0] + increment * index;
-  }
+    if (index === 0) {
+        return domain[0];
+    } else if (index + 1 === bins) {
+        return domain[1];
+    } else {
+        const increment = (domain[1] - domain[0]) / bins;
+        return domain[0] + increment * index;
+    }
 }
 
 function validateNumericalInput(previousValue: number, nextValue: any): number {
@@ -77,19 +75,22 @@ function validateNumericalInput(previousValue: number, nextValue: any): number {
 }
 
 function renderTickIcon(state, dispatch) {
-  return h("div.tick", {
-    on: { click: () => dispatch.call("open", this, state.index) }
-  });
+  return h(
+    "div.tick",
+    { on: { click: () => dispatch.call("open", this, state.index) } }
+  );
 }
 
 function renderToggleIcon(state, dispatch) {
-  return h("div.open-toggle", {
-    on: {
-      click: () => {
-        dispatch.call("toggle", this, state);
+  return h("div.open-toggle",
+    {
+      on: {
+        click: () => {
+          dispatch.call("toggle", this, state)
+        }
       }
     }
-  });
+  )
 }
 
 function renderLockIcon(locked, index, dispatch) {
@@ -124,7 +125,7 @@ function renderInput(state: GradientLegendState, domain, dispatch): VNode {
     },
     on: {
       focus: e => {
-        e.target.select();
+        e.target.select()
       },
       blur: e => {
         const value = validateNumericalInput(domain.value, e.target.value);
@@ -148,64 +149,40 @@ export function renderGradientLegend(
   dispatch
 ): VNode {
   const stacked = typeof state.index === "number";
-  return h(
-    `div.legend.gradient-legend${stacked ? ".with-header" : ".legendables"}${
-      state.open ? ".open" : ".collapsed"
-    }${state.position ? `.${state.position}` : ""}`,
-    [
-      stacked
-        ? h("div.header", [
-            h("div.title-text", state.title),
-            renderTickIcon(state, dispatch)
-          ])
-        : h("div"),
-      state.open
-        ? h("div.range", [
-            ...state.range.map((color, index: number) => {
-              const isMinMax = index === 0 || index === state.range.length - 1;
-              const step = Array.isArray(state.domain)
-                ? formatNumber(
-                    rangeStep(state.domain, index, state.range.length)
-                  )
-                : null;
-              const domain = Array.isArray(state.domain)
-                ? state.domain
-                : [null, null];
-              const [min, max] = domain;
+  return h(`div.legend.gradient-legend${stacked ? ".with-header" : ".legendables"}${state.open ? ".open" : ".collapsed"}${state.position ? `.${state.position}` : ""}`, [
+    stacked ?
+      h("div.header", [h("div.title-text", state.title), renderTickIcon(state, dispatch)]) : h("div"),
+    state.open
+      ? h("div.range", [
+          ...state.range.map((color, index: number) => {
+            const isMinMax = index === 0 || index === state.range.length - 1;
+            const step = Array.isArray(state.domain) ? formatNumber(rangeStep(state.domain, index, state.range.length)) : null;
+            const domain = Array.isArray(state.domain) ? state.domain : [null, null]
+            const [min, max] = domain;
 
-              return h("div.block", [
-                h("div.color", { style: { background: color } }),
-                h(
-                  `div.text.${isMinMax ? "extent" : "step"}`,
-                  [
-                    h("span", `${domain.length > 2 ? domain[index] : step}`)
-                  ].concat(
-                    isMinMax
-                      ? [
-                          renderInput(
-                            state,
-                            {
-                              value:
-                                domain.length === 2
-                                  ? domain[index === 0 ? 0 : 1]
-                                  : domain[index],
-                              index
-                            },
-                            dispatch
-                          )
-                        ]
-                      : []
-                  )
+            return h("div.block", [
+              h("div.color", { style: { background: color } }),
+              h(
+                `div.text.${isMinMax ? "extent" : "step"}`,
+                [h("span", `${domain.length > 2 ? domain[index] : step}`)].concat(
+                  isMinMax
+                    ? [
+                        renderInput(
+                          state,
+                          { value: domain.length === 2 ? domain[index === 0 ? 0 : 1] : domain[index], index },
+                          dispatch
+                        )
+                      ]
+                    : []
                 )
-              ]);
-            })
-          ])
-        : h("div"),
-      state.open
-        ? renderLockIcon(state.locked, state.index, dispatch)
-        : h("div")
-    ]
-  );
+              )
+            ]);
+          })
+        ])
+      : h("div"),
+    state.open ?
+      renderLockIcon(state.locked, state.index, dispatch) : h("div")
+  ]);
 }
 
 export function renderNominalLegend(
@@ -213,54 +190,45 @@ export function renderNominalLegend(
   dispatch
 ): VNode {
   const stacked = typeof state.index === "number";
-  return h(
-    `div.legend.nominal-legend${stacked ? "" : ".legendables"}${
-      state.open ? ".open" : ".collapsed"
-    }${state.position ? `.${state.position}` : ""}`,
-    [
-      !stacked ? renderToggleIcon(state, dispatch) : h("div"),
-      state.title &&
-        h("div.header", [
-          h("div.title-text", state.title),
-          renderTickIcon(state, dispatch)
-        ]),
-      state.open
-        ? h(
-            "div.body",
-            state.domain.map((value, index) =>
-              h(
-                "div.legend-row",
-                { on: { click: () => dispatch.call("filter", this, value) } },
-                [
-                  h("div.color", {
-                    style: { background: state.range[index] }
-                  }),
-                  h("div.text", `${value}`)
-                ]
-              )
+  return h(`div.legend.nominal-legend${stacked ? "" : ".legendables"}${state.open ? ".open" : ".collapsed"}${state.position ? `.${state.position}` : ""}`, [
+    !stacked ? renderToggleIcon(state, dispatch) : h("div"),
+    state.title &&
+      h("div.header", [h("div.title-text", state.title), renderTickIcon(state, dispatch)]),
+    state.open
+      ? h(
+          "div.body",
+          state.domain.map((value, index) =>
+            h(
+              "div.legend-row",
+              { on: { click: () => dispatch.call("filter", this, value) } },
+              [
+                h("div.color", {
+                  style: { background: state.range[index] }
+                }),
+                h("div.text", `${value}`)
+              ]
             )
           )
-        : h("div")
-    ]
-  );
+        )
+      : h("div")
+  ]);
 }
 
 export function renderStackedLegend(state, dispatch): VNode {
   return h(
-    `div.legendables${state.open ? ".open" : ".collapsed"}${
-      state.list.length > 1 ? ".show-ticks" : ""
-    }`,
-    { style: { maxHeight: `${state.maxHeight}px` } },
-    [renderToggleIcon(state, dispatch)].concat(
-      state.list.map((legend, index) => {
-        if (legend.type === "gradient") {
-          return renderGradientLegend({ ...legend, index }, dispatch);
-        } else if (legend.type === "nominal") {
-          return renderNominalLegend({ ...legend, index }, dispatch);
+    `div.legendables${state.open ? ".open" : ".collapsed"}${state.list.length > 1 ? ".show-ticks" : ""}`,
+    { style: {maxHeight: `${state.maxHeight}px` } },
+      [renderToggleIcon(state, dispatch)].concat(
+        state.list.map((legend, index) => {
+          if (legend.type === "gradient") {
+            return renderGradientLegend({ ...legend, index }, dispatch);
+          } else if (legend.type === "nominal") {
+            return renderNominalLegend({ ...legend, index }, dispatch);
+          }
         }
-      })
+      )
     )
-  );
+  )
 }
 
 export default class Legend {
@@ -270,14 +238,7 @@ export default class Legend {
 
   constructor(node: HTMLElement) {
     this.node = node;
-    this.dispatch = dispatch(
-      "filter",
-      "input",
-      "open",
-      "lock",
-      "toggle",
-      "doneRender"
-    );
+    this.dispatch = dispatch("filter", "input", "open", "lock", "toggle", "doneRender");
     this.state = null;
   }
 
@@ -301,11 +262,11 @@ export default class Legend {
     } else if (this.state.type === "stacked") {
       vnode = renderStackedLegend(this.state, this.dispatch);
     } else {
-      vnode = h("div");
+      vnode = h("div")
     }
 
     this.node = patch(this.node, vnode);
-    this.dispatch.call("doneRender", this, state);
+    this.dispatch.call("doneRender", this, state)
 
     return this.node;
   };
