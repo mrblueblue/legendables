@@ -44,7 +44,7 @@ type Handlers = {
   handleFilter: (ev: UIEvent) => void;
 };
 
-const commafy = d => format(",")(parseFloat(d.toFixed(2)));
+const commafy = d => typeof d === "number" ? format(",")(parseFloat(d.toFixed(2))) : d;
 const formatNumber = (d) => {
   if (String(d).length <= 4) {
     return commafy(d)

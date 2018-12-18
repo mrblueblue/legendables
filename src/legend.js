@@ -12,7 +12,7 @@ var h_1 = require("snabbdom/h");
 var vdom_1 = require("./vdom");
 var d3_dispatch_1 = require("d3-dispatch");
 var d3_format_1 = require("d3-format");
-var commafy = function (d) { return d3_format_1.format(",")(parseFloat(d.toFixed(2))); };
+var commafy = function (d) { return typeof d === "number" ? d3_format_1.format(",")(parseFloat(d.toFixed(2))) : d; };
 var formatNumber = function (d) {
     if (String(d).length <= 4) {
         return commafy(d);
@@ -26,21 +26,15 @@ var formatNumber = function (d) {
 };
 function rangeStep(domain, index, bins) {
     if (bins === void 0) { bins = 9; }
-    if (Array.isArray(domain)) {
-        debugger;
-        if (index === 0) {
-            return domain[0];
-        }
-        else if (index + 1 === bins) {
-            return domain[1];
-        }
-        else {
-            var increment = (domain[1] - domain[0]) / bins;
-            return domain[0] + increment * index;
-        }
+    if (index === 0) {
+        return domain[0];
+    }
+    else if (index + 1 === bins) {
+        return domain[1];
     }
     else {
-        return 0;
+        var increment = (domain[1] - domain[0]) / bins;
+        return domain[0] + increment * index;
     }
 }
 function validateNumericalInput(previousValue, nextValue) {
@@ -120,8 +114,8 @@ function renderGradientLegend(state, dispatch) {
         state.open
             ? h_1.default("div.range", state.range.map(function (color, index) {
                 var isMinMax = index === 0 || index === state.range.length - 1;
-                var step = formatNumber(rangeStep(state.domain, index, state.range.length));
-                var domain = (state.domain && Array.isArray(state.domain)) ? state.domain : [0, 0];
+                var step = Array.isArray(state.domain) ? formatNumber(rangeStep(state.domain, index, state.range.length)) : null;
+                var domain = Array.isArray(state.domain) ? state.domain : [null, null];
                 var min = domain[0], max = domain[1];
                 return h_1.default("div.block", [
                     h_1.default("div.color", { style: { background: color } }),
