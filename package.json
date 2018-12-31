@@ -18,7 +18,7 @@
   "dependencies": {
     "d3-dispatch": "^1.0.3",
     "d3-format": "^1.2.0",
-    "snabbdom": "^0.7.0"
+    "snabbdom": "0.7.2"
   },
   "devDependencies": {
     "@types/d3": "^4.10.0",
